@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-curso-udemy"
+		},
+		"ls_adls_accountKey": {
+			"value": ""
+		},
+		"ls_databricks_accessToken": {
+			"value": ""
+		},
+		"ls_sql_udemy_curso_connectionString": {
+			"value": ""
+		},
+		"ls_adls_properties_typeProperties_url": {
+			"value": "https://workshopadls.dfs.core.windows.net"
+		},
+		"ls_akv_properties_typeProperties_baseUrl": {
+			"value": "https://akv-curso-udemy.vault.azure.net/"
+		},
+		"ls_ftp_ibge_properties_typeProperties_host": {
+			"value": "ftp.ibge.gov.br/"
+		},
+		"trg_storage_event_properties_ingest_salesLT_product_parameters_tbName": {
+			"value": "Product"
+		},
+		"trg_storage_event_properties_typeProperties_scope": {
+			"value": "/subscriptions/629adbd4-fb6e-4c3f-b6a9-11632cbdf973/resourceGroups/workshop/providers/Microsoft.Storage/storageAccounts/workshopadls"
+		}
+	}
+}
