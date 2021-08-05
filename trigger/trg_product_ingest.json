@@ -1,0 +1,17 @@
+{
+	"name": "trg_product_ingest",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 1,
+				"startTime": "2021-08-04T16:15:00",
+				"timeZone": "E. South America Standard Time"
+			}
+		}
+	}
+}

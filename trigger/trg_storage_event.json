@@ -1,0 +1,28 @@
+{
+	"name": "trg_storage_event",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "ingest_salesLT_product",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"tbName": "Product"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/stage/blobs/events",
+			"blobPathEndsWith": "product.txt",
+			"ignoreEmptyBlobs": false,
+			"scope": "/subscriptions/629adbd4-fb6e-4c3f-b6a9-11632cbdf973/resourceGroups/workshop/providers/Microsoft.Storage/storageAccounts/workshopadls",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}
