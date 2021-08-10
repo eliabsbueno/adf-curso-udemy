@@ -1,0 +1,15 @@
+{
+	"name": "ls_adls_udemy",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://sacursofundamentos.dfs.core.windows.net",
+			"tenant": "3245bc8a-a3a7-40b4-91dd-408347fc3701",
+			"servicePrincipalId": "9ba758f3-ff10-45b1-8ee5-85be746601ae",
+			"servicePrincipalCredentialType": "ServicePrincipalKey",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkFERi1DVVJTTy1VREVNWV8yMDBjOTFlZS1mZmEyLTQyOTEtYjAyYi0wM2M0OWUzOGNjYzAiDQp9"
+		}
+	}
+}
