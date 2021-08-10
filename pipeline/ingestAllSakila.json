@@ -52,7 +52,14 @@
 						{
 							"name": "Copy data1",
 							"type": "Copy",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "setTbName",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "7.00:00:00",
 								"retry": 0,
@@ -90,7 +97,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"tbName": {
-											"value": "@item().Tables_in_sakila",
+											"value": "@variables('tbName')",
 											"type": "Expression"
 										},
 										"dbName": "sakila"
@@ -104,18 +111,36 @@
 									"parameters": {
 										"container": "bronze",
 										"folder": {
-											"value": "sakila/@{item().Tables_in_sakila}/dtIngestion=@{utcnow('yyyyMMdd')}",
+											"value": "sakila/@{variables('tbName')}/dtIngestion=@{utcnow('yyyyMMdd')}",
 											"type": "Expression"
 										},
 										"file": "file.parquet"
 									}
 								}
 							]
+						},
+						{
+							"name": "setTbName",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "tbName",
+								"value": {
+									"value": "@item().Tables_in_sakila",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}
 			}
 		],
+		"variables": {
+			"tbName": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
