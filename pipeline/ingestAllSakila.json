@@ -47,7 +47,7 @@
 						"value": "@activity('getTables').output.value",
 						"type": "Expression"
 					},
-					"batchCount": 4,
+					"isSequential": true,
 					"activities": [
 						{
 							"name": "Copy data1",
