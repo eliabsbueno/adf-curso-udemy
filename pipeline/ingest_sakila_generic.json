@@ -30,52 +30,6 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"name": "actor_id",
-									"type": "Int32"
-								},
-								"sink": {
-									"name": "actor_id",
-									"type": "Int32",
-									"physicalType": "INT_32"
-								}
-							},
-							{
-								"source": {
-									"name": "first_name",
-									"type": "String"
-								},
-								"sink": {
-									"name": "first_name",
-									"type": "String",
-									"physicalType": "UTF8"
-								}
-							},
-							{
-								"source": {
-									"name": "last_name",
-									"type": "String"
-								},
-								"sink": {
-									"name": "last_name",
-									"type": "String",
-									"physicalType": "UTF8"
-								}
-							},
-							{
-								"source": {
-									"name": "last_update",
-									"type": "DateTime"
-								},
-								"sink": {
-									"name": "last_update",
-									"type": "DateTime",
-									"physicalType": "INT_96"
-								}
-							}
-						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
