@@ -310,6 +310,9 @@
 				"type": "String"
 			}
 		},
+		"folder": {
+			"name": "Curso ADF"
+		},
 		"annotations": [],
 		"lastPublishTime": "2021-08-04T19:17:35Z"
 	},
