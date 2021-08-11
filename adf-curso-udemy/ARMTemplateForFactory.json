@@ -19,6 +19,14 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ls_sql_udemy_curso'"
 		},
+		"ls_mysql_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_mysql'"
+		},
+		"ls_adls_udemy_servicePrincipalCredential": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalCredential' of 'ls_adls_udemy'"
+		},
 		"ls_adls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://workshopadls.dfs.core.windows.net"
@@ -38,6 +46,18 @@
 		"trg_storage_event_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/629adbd4-fb6e-4c3f-b6a9-11632cbdf973/resourceGroups/workshop/providers/Microsoft.Storage/storageAccounts/workshopadls"
+		},
+		"ls_adls_udemy_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://sacursofundamentos.dfs.core.windows.net"
+		},
+		"ls_adls_udemy_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "3245bc8a-a3a7-40b4-91dd-408347fc3701"
+		},
+		"ls_adls_udemy_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "9ba758f3-ff10-45b1-8ee5-85be746601ae"
 		}
 	},
 	"variables": {
@@ -46,6 +66,331 @@
 	"resources": [
 		{
 			"name": "[concat(parameters('factoryName'), '/ingest_salesLT_product')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "set_current_date",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "current_date",
+							"value": {
+								"value": "@utcnow('yyyyMMdd')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "ingest_product",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "set_current_date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ProductID",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "ProductID",
+											"type": "Int32",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "Name",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "Name",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "ProductNumber",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "ProductNumber",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Color",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "Color",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "StandardCost",
+											"type": "Decimal",
+											"physicalType": "money",
+											"scale": 4,
+											"precision": 19
+										},
+										"sink": {
+											"name": "StandardCost",
+											"type": "Decimal",
+											"physicalType": "DECIMAL"
+										}
+									},
+									{
+										"source": {
+											"name": "ListPrice",
+											"type": "Decimal",
+											"physicalType": "money",
+											"scale": 4,
+											"precision": 19
+										},
+										"sink": {
+											"name": "ListPrice",
+											"type": "Decimal",
+											"physicalType": "DECIMAL"
+										}
+									},
+									{
+										"source": {
+											"name": "Size",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "Size",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "Weight",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 2,
+											"precision": 8
+										},
+										"sink": {
+											"name": "Weight",
+											"type": "Decimal",
+											"physicalType": "DECIMAL"
+										}
+									},
+									{
+										"source": {
+											"name": "ProductCategoryID",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "ProductCategoryID",
+											"type": "Int32",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "ProductModelID",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "ProductModelID",
+											"type": "Int32",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "SellStartDate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										},
+										"sink": {
+											"name": "SellStartDate",
+											"type": "DateTime",
+											"physicalType": "INT_96"
+										}
+									},
+									{
+										"source": {
+											"name": "SellEndDate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										},
+										"sink": {
+											"name": "SellEndDate",
+											"type": "DateTime",
+											"physicalType": "INT_96"
+										}
+									},
+									{
+										"source": {
+											"name": "DiscontinuedDate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										},
+										"sink": {
+											"name": "DiscontinuedDate",
+											"type": "DateTime",
+											"physicalType": "INT_96"
+										}
+									},
+									{
+										"source": {
+											"name": "ThumbNailPhoto",
+											"type": "Byte[]",
+											"physicalType": "varbinary"
+										},
+										"sink": {
+											"name": "ThumbNailPhoto",
+											"type": "Byte[]",
+											"physicalType": "BINARY"
+										}
+									},
+									{
+										"source": {
+											"name": "ThumbnailPhotoFileName",
+											"type": "String",
+											"physicalType": "nvarchar"
+										},
+										"sink": {
+											"name": "ThumbnailPhotoFileName",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "rowguid",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										},
+										"sink": {
+											"name": "rowguid",
+											"type": "Guid",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "ModifiedDate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										},
+										"sink": {
+											"name": "ModifiedDate",
+											"type": "DateTime",
+											"physicalType": "INT_96"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_sqldb_curso_udemy",
+								"type": "DatasetReference",
+								"parameters": {
+									"schema": "SalesLt",
+									"tbName": {
+										"value": "@pipeline().parameters.tbName",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_parquet",
+								"type": "DatasetReference",
+								"parameters": {
+									"container": "bronze",
+									"path": {
+										"value": "SalesLt/@{pipeline().parameters.tbName}/@{variables('current_date')}",
+										"type": "Expression"
+									},
+									"fileName": "file.parquet"
+								}
+							}
+						]
+					}
+				],
+				"parameters": {
+					"tbName": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"current_date": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Curso ADF"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-08-04T19:17:35Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sqldb_curso_udemy')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_parquet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ingest_salesLT_product_copy1')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -357,6 +702,9 @@
 					"current_date": {
 						"type": "String"
 					}
+				},
+				"folder": {
+					"name": "Curso ADF"
 				},
 				"annotations": [],
 				"lastPublishTime": "2021-08-04T19:17:35Z"
@@ -741,6 +1089,9 @@
 						"type": "String"
 					}
 				},
+				"folder": {
+					"name": "Curso ADF"
+				},
 				"annotations": [],
 				"lastPublishTime": "2021-06-21T01:41:06Z"
 			},
@@ -779,6 +1130,47 @@
 					"parameter_value": {
 						"type": "String"
 					}
+				},
+				"folder": {
+					"name": "Curso ADF"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-06-21T13:44:11Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/parameter_copy1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "parameter_value",
+							"value": {
+								"value": "@pipeline().parameters.fileName",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"fileName": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"parameter_value": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Curso ADF"
 				},
 				"annotations": [],
 				"lastPublishTime": "2021-06-21T13:44:11Z"
@@ -847,6 +1239,9 @@
 						]
 					}
 				],
+				"folder": {
+					"name": "Curso ADF"
+				},
 				"annotations": [],
 				"lastPublishTime": "2021-08-03T22:01:45Z"
 			},
@@ -983,6 +1378,9 @@
 						}
 					}
 				],
+				"folder": {
+					"name": "Curso ADF"
+				},
 				"annotations": [],
 				"lastPublishTime": "2021-08-04T17:02:05Z"
 			},
@@ -1021,6 +1419,9 @@
 						}
 					}
 				],
+				"folder": {
+					"name": "Curso ADF"
+				},
 				"annotations": [],
 				"lastPublishTime": "2021-08-03T16:26:54Z"
 			},
@@ -1072,6 +1473,9 @@
 						}
 					}
 				],
+				"folder": {
+					"name": "Curso ADF"
+				},
 				"annotations": [],
 				"lastPublishTime": "2021-08-03T18:15:39Z"
 			},
@@ -1515,6 +1919,417 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_adls_parquet')]",
 				"[concat(variables('factoryId'), '/datasets/ds_adls_parquet_sink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ir-selfhosted-udemy')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_mysql')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"dbName": {
+						"type": "string",
+						"defaultValue": "sakila"
+					}
+				},
+				"annotations": [],
+				"type": "MySql",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_mysql_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "ir-selfhosted-udemy",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/ir-selfhosted-udemy')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_mysql')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_mysql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"dbName": {
+							"value": "@dataset().dbName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"tbName": {
+						"type": "string"
+					},
+					"dbName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "MySqlTable",
+				"schema": [],
+				"typeProperties": {
+					"tableName": {
+						"value": "@dataset().tbName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_mysql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_adls_udemy')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ls_adls_udemy_properties_typeProperties_url')]",
+					"tenant": "[parameters('ls_adls_udemy_properties_typeProperties_tenant')]",
+					"servicePrincipalId": "[parameters('ls_adls_udemy_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalCredentialType": "ServicePrincipalKey",
+					"servicePrincipalCredential": {
+						"type": "SecureString",
+						"value": "[parameters('ls_adls_udemy_servicePrincipalCredential')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_adls_parquet_udemy')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adls_udemy",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"container": {
+						"type": "string"
+					},
+					"folder": {
+						"type": "string"
+					},
+					"file": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().file",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().folder",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().container",
+							"type": "Expression"
+						}
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_adls_udemy')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ingest_sakila_actor')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "MySqlSource"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "actor_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"name": "actor_id",
+											"type": "Int32",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "first_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "first_name",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "last_name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "last_name",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "last_update",
+											"type": "DateTime"
+										},
+										"sink": {
+											"name": "last_update",
+											"type": "DateTime",
+											"physicalType": "INT_96"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_mysql",
+								"type": "DatasetReference",
+								"parameters": {
+									"tbName": "actor",
+									"dbName": "sakila"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_parquet_udemy",
+								"type": "DatasetReference",
+								"parameters": {
+									"container": "bronze",
+									"folder": {
+										"value": "sakila/actor/dtIngestion=@{utcnow('yyyyMMdd')}",
+										"type": "Expression"
+									},
+									"file": "file.parquet"
+								}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_mysql')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_parquet_udemy')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ingest_sakila_generic')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ingestData",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "MySqlSource"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_mysql",
+								"type": "DatasetReference",
+								"parameters": {
+									"tbName": {
+										"value": "@pipeline().parameters.tbName",
+										"type": "Expression"
+									},
+									"dbName": "sakila"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_parquet_udemy",
+								"type": "DatasetReference",
+								"parameters": {
+									"container": "bronze",
+									"folder": {
+										"value": "sakila/@{pipeline().parameters.tbName}/dtIngestion=@{utcnow('yyyyMMdd')}",
+										"type": "Expression"
+									},
+									"file": "file.parquet"
+								}
+							}
+						]
+					}
+				],
+				"parameters": {
+					"tbName": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_mysql')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_parquet_udemy')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ingest_sakilla_full')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@variables('tableList')",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"batchCount": 4,
+							"activities": [
+								{
+									"name": "IngestTable",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "ingest_sakila_generic",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"tbName": {
+												"value": "@item()",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"variables": {
+					"tableList": {
+						"type": "Array",
+						"defaultValue": [
+							"actor",
+							"address",
+							"category",
+							"city",
+							"country",
+							"customer",
+							"film",
+							"film_actor",
+							"film_category",
+							"film_text",
+							"inventory",
+							"language",
+							"payment",
+							"rental",
+							"staff",
+							"store"
+						]
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/ingest_sakila_generic')]"
 			]
 		}
 	]

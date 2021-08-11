@@ -6,123 +6,12 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-curso-udemy"
-		},
-		"trg_storage_event_properties_ingest_salesLT_product_parameters_tbName": {
-			"type": "string",
-			"defaultValue": "Product"
-		},
-		"trg_storage_event_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/629adbd4-fb6e-4c3f-b6a9-11632cbdf973/resourceGroups/workshop/providers/Microsoft.Storage/storageAccounts/workshopadls"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_sqldb_curso_udemy')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_sql_udemy_curso",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"schema": {
-						"type": "string"
-					},
-					"tbName": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": {
-						"value": "@dataset().schema",
-						"type": "Expression"
-					},
-					"table": {
-						"value": "@dataset().tbName",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/df_transform_product')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_adls_parquet",
-								"type": "DatasetReference"
-							},
-							"name": "ReadBronzeProduct"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_adls_parquet_sink",
-								"type": "DatasetReference"
-							},
-							"name": "WriteProductSilver"
-						}
-					],
-					"transformations": [
-						{
-							"name": "NewColumns"
-						}
-					],
-					"script": "source(output(\n\t\tProductID as integer,\n\t\tName as string,\n\t\tProductNumber as string,\n\t\tColor as string,\n\t\tStandardCost as decimal(19,4),\n\t\tListPrice as decimal(19,4),\n\t\tSize as string,\n\t\tWeight as decimal(8,2),\n\t\tProductCategoryID as integer,\n\t\tProductModelID as integer,\n\t\tSellStartDate as timestamp,\n\t\tSellEndDate as timestamp,\n\t\tDiscontinuedDate as timestamp,\n\t\tThumbNailPhoto as binary,\n\t\tThumbnailPhotoFileName as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'parquet') ~> ReadBronzeProduct\nReadBronzeProduct derive(ModifiedDateSilver = currentTimestamp(),\n\t\tColor = case(isNull(Color), 'NOT INFORMED', upper(Color))) ~> NewColumns\nNewColumns sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tumask: 0022,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tProductID,\n\t\tName,\n\t\tProductNumber,\n\t\tColor,\n\t\tStandardCost,\n\t\tListPrice,\n\t\tSize,\n\t\tWeight,\n\t\tProductCategoryID,\n\t\tProductModelID,\n\t\tSellStartDate,\n\t\tSellEndDate,\n\t\tDiscontinuedDate,\n\t\tThumbNailPhoto,\n\t\tThumbnailPhotoFileName,\n\t\trowguid,\n\t\tModifiedDateSource = ModifiedDate,\n\t\tModifiedDateSilver\n\t)) ~> WriteProductSilver"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_mysql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_mysql",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"dbName": {
-							"value": "@dataset().dbName",
-							"type": "Expression"
-						}
-					}
-				},
-				"parameters": {
-					"tbName": {
-						"type": "string"
-					},
-					"dbName": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "MySqlTable",
-				"schema": [],
-				"typeProperties": {
-					"tableName": {
-						"value": "@dataset().tbName",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ingest_salesLT_product')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -443,9 +332,7 @@
 				"annotations": [],
 				"lastPublishTime": "2021-08-04T19:17:35Z"
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_sqldb_curso_udemy')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ingest_salesLT_product_copy1')]",
@@ -767,9 +654,7 @@
 				"annotations": [],
 				"lastPublishTime": "2021-08-04T19:17:35Z"
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_sqldb_curso_udemy')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ingest_salesLt_SalesOrderDetail')]",
@@ -1152,9 +1037,153 @@
 				"annotations": [],
 				"lastPublishTime": "2021-06-21T01:41:06Z"
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_sqldb_curso_udemy')]"
-			]
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/parameter')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "parameter_value",
+							"value": {
+								"value": "@pipeline().parameters.fileName",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"fileName": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"parameter_value": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Curso ADF"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-06-21T13:44:11Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/parameter_copy1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "parameter_value",
+							"value": {
+								"value": "@pipeline().parameters.fileName",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"fileName": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"parameter_value": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "Curso ADF"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-06-21T13:44:11Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_ingest_ibge_acesso')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BinarySource",
+								"storeSettings": {
+									"type": "FtpReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*",
+									"useBinaryTransfer": true,
+									"deleteFilesAfterCompletion": false
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							},
+							"sink": {
+								"type": "BinarySink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_ftp_ibge_binary",
+								"type": "DatasetReference",
+								"parameters": {
+									"Directory": "Acesso_a_internet_e_posse_celular/2015/Tabelas_de_Resultados/xlsx/02_Domicilios_Particulares_Permanentes"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_binary",
+								"type": "DatasetReference",
+								"parameters": {
+									"container": "bronze",
+									"folder": "ibge"
+								}
+							}
+						]
+					}
+				],
+				"folder": {
+					"name": "Curso ADF"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-08-03T22:01:45Z"
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pl_paralelismo_manual')]",
@@ -1290,9 +1319,45 @@
 				"annotations": [],
 				"lastPublishTime": "2021-08-04T17:02:05Z"
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_sqldb_curso_udemy')]"
-			]
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_transform_product')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "execute_transformation",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Shared/udemy/transform_product",
+							"baseParameters": {
+								"p_data": "20210803"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_databricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"folder": {
+					"name": "Curso ADF"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-08-03T16:26:54Z"
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pl_transform_product_df')]",
@@ -1316,7 +1381,6 @@
 							"dataflow": {
 								"referenceName": "df_transform_product",
 								"type": "DataFlowReference",
-								"parameters": {},
 								"datasetParameters": {
 									"ReadBronzeProduct": {
 										"container": "bronze",
@@ -1329,7 +1393,6 @@
 									}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -1344,8 +1407,107 @@
 				"annotations": [],
 				"lastPublishTime": "2021-08-03T18:15:39Z"
 			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_mysql')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_mysql",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"dbName": {
+							"value": "@dataset().dbName",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"tbName": {
+						"type": "string"
+					},
+					"dbName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "MySqlTable",
+				"schema": [],
+				"typeProperties": {
+					"tableName": {
+						"value": "@dataset().tbName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_adls_udemy')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "https://sacursofundamentos.dfs.core.windows.net",
+					"tenant": "3245bc8a-a3a7-40b4-91dd-408347fc3701",
+					"servicePrincipalId": "9ba758f3-ff10-45b1-8ee5-85be746601ae",
+					"servicePrincipalCredentialType": "ServicePrincipalKey",
+					"servicePrincipalCredential": {
+						"type": "SecureString",
+						"value": "**********"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_adls_parquet_udemy')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_adls_udemy",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"container": {
+						"type": "string"
+					},
+					"folder": {
+						"type": "string"
+					},
+					"file": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().file",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().folder",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().container",
+							"type": "Expression"
+						}
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_transform_product')]"
+				"[concat(variables('factoryId'), '/linkedServices/ls_adls_udemy')]"
 			]
 		},
 		{
@@ -1464,7 +1626,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_mysql')]"
+				"[concat(variables('factoryId'), '/datasets/ds_mysql')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_parquet_udemy')]"
 			]
 		},
 		{
@@ -1545,79 +1708,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_mysql')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trg_product_transform')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipeline": {
-					"pipelineReference": {
-						"referenceName": "pl_transform_product_df",
-						"type": "PipelineReference"
-					},
-					"parameters": {}
-				},
-				"type": "TumblingWindowTrigger",
-				"typeProperties": {
-					"frequency": "Minute",
-					"interval": 5,
-					"startTime": "2021-08-04T19:45:00Z",
-					"delay": "00:00:00",
-					"maxConcurrency": 50,
-					"retryPolicy": {
-						"intervalInSeconds": 30
-					},
-					"dependsOn": [
-						{
-							"type": "TumblingWindowTriggerDependencyReference",
-							"referenceTrigger": {
-								"referenceName": "trg_tumbling_ingest_product",
-								"type": "TriggerReference"
-							}
-						}
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_transform_product_df')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trg_storage_event')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "ingest_salesLT_product",
-							"type": "PipelineReference"
-						},
-						"parameters": {
-							"tbName": "[parameters('trg_storage_event_properties_ingest_salesLT_product_parameters_tbName')]"
-						}
-					}
-				],
-				"type": "BlobEventsTrigger",
-				"typeProperties": {
-					"blobPathBeginsWith": "/stage/blobs/events",
-					"blobPathEndsWith": "product.txt",
-					"ignoreEmptyBlobs": false,
-					"scope": "[parameters('trg_storage_event_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/ingest_salesLT_product')]"
+				"[concat(variables('factoryId'), '/datasets/ds_mysql')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_parquet_udemy')]"
 			]
 		},
 		{

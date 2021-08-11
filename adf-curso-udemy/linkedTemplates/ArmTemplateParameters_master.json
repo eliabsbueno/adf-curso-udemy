@@ -14,6 +14,12 @@
 		"ls_sql_udemy_curso_connectionString": {
 			"value": ""
 		},
+		"ls_mysql_connectionString": {
+			"value": ""
+		},
+		"ls_adls_udemy_servicePrincipalCredential": {
+			"value": ""
+		},
 		"ls_adls_properties_typeProperties_url": {
 			"value": "https://workshopadls.dfs.core.windows.net"
 		},
@@ -28,6 +34,15 @@
 		},
 		"trg_storage_event_properties_typeProperties_scope": {
 			"value": "/subscriptions/629adbd4-fb6e-4c3f-b6a9-11632cbdf973/resourceGroups/workshop/providers/Microsoft.Storage/storageAccounts/workshopadls"
+		},
+		"ls_adls_udemy_properties_typeProperties_url": {
+			"value": "https://sacursofundamentos.dfs.core.windows.net"
+		},
+		"ls_adls_udemy_properties_typeProperties_tenant": {
+			"value": "3245bc8a-a3a7-40b4-91dd-408347fc3701"
+		},
+		"ls_adls_udemy_properties_typeProperties_servicePrincipalId": {
+			"value": "9ba758f3-ff10-45b1-8ee5-85be746601ae"
 		},
 		"containerUri": {
 			"value": ""
