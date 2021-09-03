@@ -1,0 +1,6 @@
+{
+	"name": "NomeIR",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}
